@@ -7,17 +7,13 @@
     "build": "webpack --config webpack/prod.js ",
     "start": "npm run build && webpack-dev-server --config webpack/base.js --open"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/photonstorm/phaser3-project-template.git"
-  },
+  "homepage": "https://dannash100.github.io/gamefroot-test/",
   "author": "Richard Davey <rdavey@gmail.com> (http://www.photonstorm.com)",
   "license": "MIT",
   "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
   "bugs": {
     "url": "https://github.com/photonstorm/phaser3-project-template/issues"
   },
-  "homepage": "https://github.com/photonstorm/phaser3-project-template#readme",
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "@babel/preset-env": "^7.11.5",
