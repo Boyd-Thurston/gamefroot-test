@@ -21,11 +21,12 @@ const config = {
 };
 
 let graphics
-let curve
+let curves = []
 let boxes
 let points
 let emitter
 let camera
+let button
 
 const game = new Phaser.Game(config);
 
@@ -47,8 +48,7 @@ function create() {
   const controlPoint = new Phaser.Math.Vector2(400, 300)
   const endPoint = new Phaser.Math.Vector2(750, 550)
 
-  curve = new Phaser.Curves.QuadraticBezier(startPoint, controlPoint, endPoint)
-  
+  curves.push(new Phaser.Curves.QuadraticBezier(startPoint, controlPoint, endPoint))
 
   // Instantiate boxes
   boxes = this.physics.add.group({
@@ -61,6 +61,32 @@ function create() {
   boxes.getChildren().forEach(box => {
     box.setOrigin(0.5)
     box.setInteractive()
+    box.on('pointerdown', (pointer, box) => {
+      if(pointer.rightButtonDown()){
+        // TODO: add context menu in between right click and functionality
+        // get index of new curve
+        const index = curves.length
+        // set params for new curve
+        const newStartPoint = new Phaser.Math.Vector2(pointer.x, pointer.y)
+        const newControlPoint = new Phaser.Math.Vector2(pointer.x + 50, pointer.y)
+        const newEndPoint = new Phaser.Math.Vector2(pointer.x + 100, pointer.y)
+        curves.push(new Phaser.Curves.QuadraticBezier(newStartPoint, newControlPoint, newEndPoint))
+
+        // create new points
+        const newPoint0 = points.create(curves[index].p0.x, curves[index].p0.y, 'circle', 0)
+          newPoint0.setData('vector', curves[index].p0)
+          newPoint0.setInteractive()
+          this.input.setDraggable(newPoint0)
+        const newPoint1 = points.create(curves[index].p1.x, curves[index].p1.y, 'circle', 0)
+          newPoint1.setData('vector', curves[index].p1)
+          newPoint1.setInteractive()
+          this.input.setDraggable(newPoint1)
+        const newPoint2 = points.create(curves[index].p2.x, curves[index].p2.y, 'circle', 0)
+          newPoint2.setData('vector', curves[index].p2)
+          newPoint2.setInteractive()
+          this.input.setDraggable(newPoint2)
+      }
+    })
     this.input.setDraggable(box)
   })
 
@@ -70,18 +96,60 @@ function create() {
     collideWorldBounds: true,
   })
 
-  const point0 = points.create(curve.p0.x, curve.p0.y, 'circle', 0)
-  const point1 = points.create(curve.p1.x, curve.p1.y, 'circle', 0)
-  const point2 = points.create(curve.p2.x, curve.p2.y, 'circle', 0)
+  const point0 = points.create(curves[0].p0.x, curves[0].p0.y, 'circle', 0)
+  const point1 = points.create(curves[0].p1.x, curves[0].p1.y, 'circle', 0)
+  const point2 = points.create(curves[0].p2.x, curves[0].p2.y, 'circle', 0)
 
   points.getChildren().forEach(point => {
     point.setInteractive()
     this.input.setDraggable(point)
   })
 
-  point0.setData('vector', curve.p0)
-  point1.setData('vector', curve.p1)
-  point2.setData('vector', curve.p2)
+  point0.setData('vector', curves[0].p0)
+  point1.setData('vector', curves[0].p1)
+  point2.setData('vector', curves[0].p2)
+
+  // Instantiate controls
+  button = this.add.text(720, 2, 'New Box', { fill: '#ffffff' })
+    .setInteractive({ useHandCursor: true })
+
+    // create new box instance on click event
+    .on('pointerdown', () => { 
+      const newBox = boxes.create(600, 300, 'square')
+      newBox.setOrigin(0.5)
+      newBox.setInteractive()
+      newBox.on('pointerdown', (pointer, newBox) => {
+        if(pointer.rightButtonDown()){
+          // TODO: add context menu in between right click and functionality
+          // get index of new curve
+          const index = curves.length
+          // set params for new curve
+          const newStartPoint = new Phaser.Math.Vector2(pointer.x, pointer.y)
+          const newControlPoint = new Phaser.Math.Vector2(pointer.x + 50, pointer.y)
+          const newEndPoint = new Phaser.Math.Vector2(pointer.x + 100, pointer.y)
+          curves.push(new Phaser.Curves.QuadraticBezier(newStartPoint, newControlPoint, newEndPoint))
+
+          // create new points
+          const newPoint0 = points.create(curves[index].p0.x, curves[index].p0.y, 'circle', 0)
+            newPoint0.setData('vector', curves[index].p0)
+            newPoint0.setInteractive()
+            this.input.setDraggable(newPoint0)
+          const newPoint1 = points.create(curves[index].p1.x, curves[index].p1.y, 'circle', 0)
+            newPoint1.setData('vector', curves[index].p1)
+            newPoint1.setInteractive()
+            this.input.setDraggable(newPoint1)
+          const newPoint2 = points.create(curves[index].p2.x, curves[index].p2.y, 'circle', 0)
+            newPoint2.setData('vector', curves[index].p2)
+            newPoint2.setInteractive()
+            this.input.setDraggable(newPoint2)
+        }
+      })
+      this.input.setDraggable(newBox)
+    })
+
+    // handle hover states
+    .on('pointerover', () => button.setStyle({ fill: '#999999'}) )
+    .on('pointerout', () => button.setStyle({ fill: '#ffffff' }) )
 
 
   // Handle drag
@@ -111,13 +179,17 @@ function create() {
   this.input.addListener('pointerup', () => {
     emitter.emit('changeBackground')
   })
+
+  // handle context menu
+  this.game.canvas.oncontextmenu = (e) => e.preventDefault()
+  
 }
 
 function update() {
   graphics.clear()
   graphics.lineStyle(2, 0xffffff, 1)
   
-  curve.draw(graphics)
+  curves.forEach(curve => curve.draw(graphics))
 }
 
 // Stick box and point together and instantiate listener
@@ -138,3 +210,4 @@ function handleColour () {
 
   camera.setBackgroundColor(color)
 }
+
