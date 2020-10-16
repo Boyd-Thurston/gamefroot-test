@@ -189,12 +189,7 @@ function update() {
   graphics.clear()
   graphics.lineStyle(2, 0xffffff, 1)
   
-  // TODO: convert in to loop through array of objects
   curves.forEach(curve => curve.draw(graphics))
-  
-  // if(newCurve != undefined){
-  //   newCurve.draw(graphics)
-  // }
 }
 
 // Stick box and point together and instantiate listener
