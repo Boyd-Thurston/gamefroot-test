@@ -198,7 +198,9 @@ function create() {
 
   // handle context menu
   this.game.canvas.oncontextmenu = (e) => e.preventDefault()
-  
+  this.input.on('pointerdown', () => {
+    clearContextMenu()
+  })
 }
 
 function update() {
@@ -227,3 +229,7 @@ function handleColour () {
   camera.setBackgroundColor(color)
 }
 
+function clearContextMenu (){
+        // check to see if menu is already open and clear if it is
+        contextMenuIsDisplaying && contextMenu.destroy()
+}
