@@ -64,29 +64,43 @@ function create() {
     box.setOrigin(0.5)
     box.setInteractive()
     box.on('pointerdown', (pointer, box) => {
+      // check to see if menu is already open and clear if it is
+      contextMenuIsDisplaying && contextMenu.destroy()
       if(pointer.rightButtonDown()){
-        // TODO: add context menu in between right click and functionality
-        // get index of new curve
-        const index = curves.length
-        // set params for new curve
-        const newStartPoint = new Phaser.Math.Vector2(pointer.x, pointer.y)
-        const newControlPoint = new Phaser.Math.Vector2(pointer.x + 50, pointer.y)
-        const newEndPoint = new Phaser.Math.Vector2(pointer.x + 100, pointer.y)
-        curves.push(new Phaser.Curves.QuadraticBezier(newStartPoint, newControlPoint, newEndPoint))
-
-        // create new points
-        const newPoint0 = points.create(curves[index].p0.x, curves[index].p0.y, 'circle', 0)
-          newPoint0.setData('vector', curves[index].p0)
-          newPoint0.setInteractive()
-          this.input.setDraggable(newPoint0)
-        const newPoint1 = points.create(curves[index].p1.x, curves[index].p1.y, 'circle', 0)
-          newPoint1.setData('vector', curves[index].p1)
-          newPoint1.setInteractive()
-          this.input.setDraggable(newPoint1)
-        const newPoint2 = points.create(curves[index].p2.x, curves[index].p2.y, 'circle', 0)
-          newPoint2.setData('vector', curves[index].p2)
-          newPoint2.setInteractive()
-          this.input.setDraggable(newPoint2)
+        // show context menu
+        contextMenu = this.add.container(pointer.x, pointer.y, [
+          this.add.rectangle(0, 0, 100, 20, 0xffffff, 1),
+          this.add.text(-45, -7, 'add wire', {
+            fill: 'black'
+          })
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => { 
+              console.log("cotext menu option pressed")
+              // get index of new curve
+              const index = curves.length
+              // set params for new curve
+              const newStartPoint = new Phaser.Math.Vector2(pointer.x, pointer.y)
+              const newControlPoint = new Phaser.Math.Vector2(pointer.x + 50, pointer.y)
+              const newEndPoint = new Phaser.Math.Vector2(pointer.x + 100, pointer.y)
+              curves.push(new Phaser.Curves.QuadraticBezier(newStartPoint, newControlPoint, newEndPoint))
+      
+              // create new points
+              const newPoint0 = points.create(curves[index].p0.x, curves[index].p0.y, 'circle', 0)
+                newPoint0.setData('vector', curves[index].p0)
+                newPoint0.setInteractive()
+                this.input.setDraggable(newPoint0)
+              const newPoint1 = points.create(curves[index].p1.x, curves[index].p1.y, 'circle', 0)
+                newPoint1.setData('vector', curves[index].p1)
+                newPoint1.setInteractive()
+                this.input.setDraggable(newPoint1)
+              const newPoint2 = points.create(curves[index].p2.x, curves[index].p2.y, 'circle', 0)
+                newPoint2.setData('vector', curves[index].p2)
+                newPoint2.setInteractive()
+                this.input.setDraggable(newPoint2)
+              contextMenu.destroy()
+            })
+        ])
+        contextMenuIsDisplaying = true     
       }
     })
     this.input.setDraggable(box)
