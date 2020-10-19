@@ -27,6 +27,8 @@ let points
 let emitter
 let camera
 let button
+let contextMenu
+let contextMenuIsDisplaying = false
 
 const game = new Phaser.Game(config);
 
