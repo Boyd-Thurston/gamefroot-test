@@ -80,8 +80,8 @@ function create() {
               const index = curves.length
               // set params for new curve
               const newStartPoint = new Phaser.Math.Vector2(pointer.x, pointer.y)
-              const newControlPoint = new Phaser.Math.Vector2(pointer.x + 50, pointer.y)
-              const newEndPoint = new Phaser.Math.Vector2(pointer.x + 100, pointer.y)
+              const newControlPoint = new Phaser.Math.Vector2(chooseDirection(pointer.x, 50), pointer.y)
+              const newEndPoint = new Phaser.Math.Vector2(chooseDirection(pointer.x, 100), pointer.y)
               curves.push(new Phaser.Curves.QuadraticBezier(newStartPoint, newControlPoint, newEndPoint))
       
               // create new points
@@ -153,8 +153,8 @@ function create() {
                 const index = curves.length
                 // set params for new curve
                 const newStartPoint = new Phaser.Math.Vector2(pointer.x, pointer.y)
-                const newControlPoint = new Phaser.Math.Vector2(pointer.x + 50, pointer.y)
-                const newEndPoint = new Phaser.Math.Vector2(pointer.x + 100, pointer.y)
+                const newControlPoint = new Phaser.Math.Vector2(chooseDirection(pointer.x, 50), pointer.y)
+                const newEndPoint = new Phaser.Math.Vector2(chooseDirection(pointer.x, 100), pointer.y)
                 curves.push(new Phaser.Curves.QuadraticBezier(newStartPoint, newControlPoint, newEndPoint))
  
                 // create new points
@@ -249,4 +249,10 @@ function handleColour () {
 function clearContextMenu (){
   // check to see if menu is already open and clear/rest indicator if it is
   contextMenuIsDisplaying && (contextMenu.destroy(), contextMenuIsDisplaying = false)
+}
+
+function chooseDirection (x, dist){
+  let newX 
+  x > 400? newX = x - dist: newX = x + dist
+  return newX
 }
