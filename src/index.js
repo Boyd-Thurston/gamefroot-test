@@ -65,9 +65,10 @@ function create() {
     box.setInteractive()
     box.on('pointerdown', (pointer, box) => {
       // check to see if menu is already open and clear if it is
-      contextMenuIsDisplaying && contextMenu.destroy()
+      clearContextMenu()
       if(pointer.rightButtonDown()){
         // show context menu
+        contextMenuIsDisplaying = true     
         contextMenu = this.add.container(pointer.x, pointer.y, [
           this.add.rectangle(0, 0, 100, 20, 0xffffff, 1),
           this.add.text(-45, -7, 'add wire', {
@@ -75,7 +76,6 @@ function create() {
           })
             .setInteractive({ useHandCursor: true })
             .on('pointerdown', () => { 
-              console.log("cotext menu option pressed")
               // get index of new curve
               const index = curves.length
               // set params for new curve
@@ -97,10 +97,12 @@ function create() {
                 newPoint2.setData('vector', curves[index].p2)
                 newPoint2.setInteractive()
                 this.input.setDraggable(newPoint2)
-              contextMenu.destroy()
+              clearContextMenu()
+            })
+            .on('pointerout', () =>{
+              clearContextMenu()
             })
         ])
-        contextMenuIsDisplaying = true     
       }
     })
     this.input.setDraggable(box)
@@ -197,10 +199,9 @@ function create() {
   })
 
   // handle context menu
-  this.game.canvas.oncontextmenu = (e) => e.preventDefault()
-  this.input.on('pointerdown', () => {
-    clearContextMenu()
-  })
+  this.game.canvas.oncontextmenu = (e) => {
+    e.preventDefault()
+  }
 }
 
 function update() {
@@ -230,6 +231,6 @@ function handleColour () {
 }
 
 function clearContextMenu (){
-        // check to see if menu is already open and clear if it is
-        contextMenuIsDisplaying && contextMenu.destroy()
+  // check to see if menu is already open and clear/rest indicator if it is
+  contextMenuIsDisplaying && (contextMenu.destroy(), contextMenuIsDisplaying = false)
 }
