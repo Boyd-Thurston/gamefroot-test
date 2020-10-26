@@ -26,7 +26,8 @@ let boxes
 let points
 let emitter
 let camera
-let button
+let newBoxButton
+let addWireButton
 let contextMenu
 let contextMenuIsDisplaying = false
 
@@ -57,13 +58,14 @@ function create() {
     collideWorldBounds: true,
   })
 
-  const box0 = boxes.create(750, 50, 'square')
+  const box0 = boxes.create(650, 100, 'square')
   const box1 = boxes.create(50, 550, 'square')
 
   boxes.getChildren().forEach(box => {
     box.setOrigin(0.5)
     box.setInteractive()
     box.on('pointerdown', (pointer, box) => {
+      addWireButton.setActive(true).setVisible(true)
       // check to see if menu is already open and clear if it is
       clearContextMenu()
       if(pointer.rightButtonDown()){
@@ -128,62 +130,71 @@ function create() {
   point2.setData('vector', curves[0].p2)
 
   // Instantiate controls
-  button = this.add.text(720, 2, 'New Box', { fill: '#ffffff' })
-    .setInteractive({ useHandCursor: true })
+  newBoxButton = this.add.container(750,2,[
+    this.add.rectangle(0, 11, 88, 16, 0xffffff, 1),
+    this.add.text(-36, 3, 'New Box', { fill: 'black' })
+      .setInteractive({ useHandCursor: true })
+  ])
 
-    // create new box instance on click event
-    .on('pointerdown', () => { 
-      const newBox = boxes.create(600, 300, 'square')
-      newBox.setOrigin(0.5)
-      newBox.setInteractive()
-      newBox.on('pointerdown', (pointer, newBox) => {
-        // check to see if menu is already open and clear if it is
-        clearContextMenu()
-        if(pointer.rightButtonDown()){
-          // show context menu
-          contextMenuIsDisplaying = true     
-          contextMenu = this.add.container(pointer.x, pointer.y, [
-            this.add.rectangle(0, 0, 100, 20, 0xffffff, 1),
-            this.add.text(-45, -7, 'add wire', {
-              fill: 'black'
-            })
-              .setInteractive({ useHandCursor: true })
-              .on('pointerdown', () => { 
-                // get index of new curve
-                const index = curves.length
-                // set params for new curve
-                const newStartPoint = new Phaser.Math.Vector2(pointer.x, pointer.y)
-                const newControlPoint = new Phaser.Math.Vector2(chooseDirection(pointer.x, 50), pointer.y)
-                const newEndPoint = new Phaser.Math.Vector2(chooseDirection(pointer.x, 100), pointer.y)
-                curves.push(new Phaser.Curves.QuadraticBezier(newStartPoint, newControlPoint, newEndPoint))
+  addWireButton = this.add.container(750,22,[
+    this.add.rectangle(0, 11, 88, 16, 0xffffff, 1),
+    this.add.text(-36, 3, 'Add Wire', { fill: 'black' })
+      .setInteractive({ useHandCursor: true })
+  ]).setActive(false).setVisible(false)
+
+    // // create new box instance on click event
+    // .on('pointerdown', () => { 
+    //   const newBox = boxes.create(600, 300, 'square')
+    //   newBox.setOrigin(0.5)
+    //   newBox.setInteractive()
+    //   newBox.on('pointerdown', (pointer, newBox) => {
+    //     // check to see if menu is already open and clear if it is
+    //     clearContextMenu()
+    //     if(pointer.rightButtonDown()){
+    //       // show context menu
+    //       contextMenuIsDisplaying = true     
+    //       contextMenu = this.add.container(pointer.x, pointer.y, [
+    //         this.add.rectangle(0, 0, 100, 20, 0xffffff, 1),
+    //         this.add.text(-45, -7, 'add wire', {
+    //           fill: 'black'
+    //         })
+    //           .setInteractive({ useHandCursor: true })
+    //           .on('pointerdown', () => { 
+    //             // get index of new curve
+    //             const index = curves.length
+    //             // set params for new curve
+    //             const newStartPoint = new Phaser.Math.Vector2(pointer.x, pointer.y)
+    //             const newControlPoint = new Phaser.Math.Vector2(chooseDirection(pointer.x, 50), pointer.y)
+    //             const newEndPoint = new Phaser.Math.Vector2(chooseDirection(pointer.x, 100), pointer.y)
+    //             curves.push(new Phaser.Curves.QuadraticBezier(newStartPoint, newControlPoint, newEndPoint))
  
-                // create new points
-                const newPoint0 = points.create(curves[index].p0.x, curves[index].p0.y, 'circle', 0)
-                  newPoint0.setData('vector', curves[index].p0)
-                  newPoint0.setInteractive()
-                  this.input.setDraggable(newPoint0)
-                const newPoint1 = points.create(curves[index].p1.x, curves[index].p1.y, 'circle', 0)
-                  newPoint1.setData('vector', curves[index].p1)
-                  newPoint1.setInteractive()
-                  this.input.setDraggable(newPoint1)
-                const newPoint2 = points.create(curves[index].p2.x, curves[index].p2.y, 'circle', 0)
-                  newPoint2.setData('vector', curves[index].p2)
-                  newPoint2.setInteractive()
-                  this.input.setDraggable(newPoint2)
-                clearContextMenu()
-              })
-              .on('pointerout', () =>{
-                clearContextMenu()
-              })
-          ])
-        }
-      })
-      this.input.setDraggable(newBox)
-    })
+    //             // create new points
+    //             const newPoint0 = points.create(curves[index].p0.x, curves[index].p0.y, 'circle', 0)
+    //               newPoint0.setData('vector', curves[index].p0)
+    //               newPoint0.setInteractive()
+    //               this.input.setDraggable(newPoint0)
+    //             const newPoint1 = points.create(curves[index].p1.x, curves[index].p1.y, 'circle', 0)
+    //               newPoint1.setData('vector', curves[index].p1)
+    //               newPoint1.setInteractive()
+    //               this.input.setDraggable(newPoint1)
+    //             const newPoint2 = points.create(curves[index].p2.x, curves[index].p2.y, 'circle', 0)
+    //               newPoint2.setData('vector', curves[index].p2)
+    //               newPoint2.setInteractive()
+    //               this.input.setDraggable(newPoint2)
+    //             clearContextMenu()
+    //           })
+    //           .on('pointerout', () =>{
+    //             clearContextMenu()
+    //           })
+    //       ])
+    //     }
+    //   })
+    //   this.input.setDraggable(newBox)
+    // })
 
-    // handle hover states
-    .on('pointerover', () => button.setStyle({ fill: '#999999'}) )
-    .on('pointerout', () => button.setStyle({ fill: '#ffffff' }) )
+    // // handle hover states
+    // .on('pointerover', () => button.setStyle({ fill: '#999999'}) )
+    // .on('pointerout', () => button.setStyle({ fill: '#ffffff' }) )
 
 
   // Handle drag
@@ -247,6 +258,7 @@ function handleColour () {
 }
 
 function clearContextMenu (){
+  console.log(" 'clearContextMenu' code block is being reached");
   // check to see if menu is already open and clear/rest indicator if it is
   contextMenuIsDisplaying && (contextMenu.destroy(), contextMenuIsDisplaying = false)
 }
