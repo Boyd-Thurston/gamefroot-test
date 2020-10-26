@@ -28,6 +28,7 @@ let emitter
 let camera
 let newBoxButton
 let addWireButton
+let location
 let contextMenu
 let contextMenuIsDisplaying = false
 
@@ -64,10 +65,9 @@ function create() {
   boxes.getChildren().forEach(box => {
     box.setOrigin(0.5)
     box.setInteractive()
-    box.on('pointerdown', (pointer, box) => {
+    box.on('pointerup', (pointer, box) => {
       addWireButton.setActive(true).setVisible(true)
-      // check to see if menu is already open and clear if it is
-      clearContextMenu()
+      location = {x: pointer.x, y: pointer.y}
       if(pointer.rightButtonDown()){
         // show context menu
         contextMenuIsDisplaying = true     
@@ -140,6 +140,10 @@ function create() {
     this.add.rectangle(0, 11, 88, 16, 0xffffff, 1),
     this.add.text(-36, 3, 'Add Wire', { fill: 'black' })
       .setInteractive({ useHandCursor: true })
+      .on('pointerdown', () => {
+        console.log("add wire button was pressed")
+        console.log(location);
+      })
   ]).setActive(false).setVisible(false)
 
     // // create new box instance on click event
@@ -225,6 +229,9 @@ function create() {
     emitter.emit('changeBackground')
   })
 
+  this.input.on('pointerdown', () => {
+    hideControls()
+  })
   // handle context menu
   this.game.canvas.oncontextmenu = (e) => {
     e.preventDefault()
@@ -261,6 +268,12 @@ function clearContextMenu (){
   console.log(" 'clearContextMenu' code block is being reached");
   // check to see if menu is already open and clear/rest indicator if it is
   contextMenuIsDisplaying && (contextMenu.destroy(), contextMenuIsDisplaying = false)
+}
+
+function hideControls (){
+  console.log(" 'clearContextMenu' code block is being reached");
+  // check to see if menu is already open and clear/rest indicator if it is
+  addWireButton.visible && addWireButton.setActive(false).setVisible(false)
 }
 
 function chooseDirection (x, dist){
