@@ -29,8 +29,6 @@ let camera
 let newBoxButton
 let addWireButton
 let location
-let contextMenu
-let contextMenuIsDisplaying = false
 
 const game = new Phaser.Game(config);
 
@@ -68,47 +66,51 @@ function create() {
     box.on('pointerup', (pointer, box) => {
       addWireButton.setActive(true).setVisible(true)
       location = {x: pointer.x, y: pointer.y}
-      if(pointer.rightButtonDown()){
-        // show context menu
-        contextMenuIsDisplaying = true     
-        contextMenu = this.add.container(pointer.x, pointer.y, [
-          this.add.rectangle(0, 0, 100, 20, 0xffffff, 1),
-          this.add.text(-45, -7, 'add wire', {
-            fill: 'black'
-          })
-            .setInteractive({ useHandCursor: true })
-            .on('pointerdown', () => { 
-              // get index of new curve
-              const index = curves.length
-              // set params for new curve
-              const newStartPoint = new Phaser.Math.Vector2(pointer.x, pointer.y)
-              const newControlPoint = new Phaser.Math.Vector2(chooseDirection(pointer.x, 50), pointer.y)
-              const newEndPoint = new Phaser.Math.Vector2(chooseDirection(pointer.x, 100), pointer.y)
-              curves.push(new Phaser.Curves.QuadraticBezier(newStartPoint, newControlPoint, newEndPoint))
-      
-              // create new points
-              const newPoint0 = points.create(curves[index].p0.x, curves[index].p0.y, 'circle', 0)
-                newPoint0.setData('vector', curves[index].p0)
-                newPoint0.setInteractive()
-                this.input.setDraggable(newPoint0)
-              const newPoint1 = points.create(curves[index].p1.x, curves[index].p1.y, 'circle', 0)
-                newPoint1.setData('vector', curves[index].p1)
-                newPoint1.setInteractive()
-                this.input.setDraggable(newPoint1)
-              const newPoint2 = points.create(curves[index].p2.x, curves[index].p2.y, 'circle', 0)
-                newPoint2.setData('vector', curves[index].p2)
-                newPoint2.setInteractive()
-                this.input.setDraggable(newPoint2)
-              clearContextMenu()
-            })
-            .on('pointerout', () =>{
-              clearContextMenu()
-            })
-        ])
-      }
     })
     this.input.setDraggable(box)
   })
+
+  //     if(pointer.rightButtonDown()){
+  //       // show context menu
+  //       contextMenuIsDisplaying = true     
+  //       contextMenu = this.add.container(pointer.x, pointer.y, [
+  //         this.add.rectangle(0, 0, 100, 20, 0xffffff, 1),
+  //         this.add.text(-45, -7, 'add wire', {
+  //           fill: 'black'
+  //         })
+  //           .setInteractive({ useHandCursor: true })
+  //           .on('pointerdown', () => { 
+  //             // get index of new curve
+  //             const index = curves.length
+  //             // set params for new curve
+  //             const newStartPoint = new Phaser.Math.Vector2(pointer.x, pointer.y)
+  //             const newControlPoint = new Phaser.Math.Vector2(chooseDirection(pointer.x, 50), pointer.y)
+  //             const newEndPoint = new Phaser.Math.Vector2(chooseDirection(pointer.x, 100), pointer.y)
+  //             curves.push(new Phaser.Curves.QuadraticBezier(newStartPoint, newControlPoint, newEndPoint))
+      
+  //             // create new points
+  //             const newPoint0 = points.create(curves[index].p0.x, curves[index].p0.y, 'circle', 0)
+  //               newPoint0.setData('vector', curves[index].p0)
+  //               newPoint0.setInteractive()
+  //               this.input.setDraggable(newPoint0)
+  //             const newPoint1 = points.create(curves[index].p1.x, curves[index].p1.y, 'circle', 0)
+  //               newPoint1.setData('vector', curves[index].p1)
+  //               newPoint1.setInteractive()
+  //               this.input.setDraggable(newPoint1)
+  //             const newPoint2 = points.create(curves[index].p2.x, curves[index].p2.y, 'circle', 0)
+  //               newPoint2.setData('vector', curves[index].p2)
+  //               newPoint2.setInteractive()
+  //               this.input.setDraggable(newPoint2)
+  //             clearContextMenu()
+  //           })
+  //           .on('pointerout', () =>{
+  //             clearContextMenu()
+  //           })
+  //       ])
+  //     }
+  //   })
+  //   this.input.setDraggable(box)
+  // })
 
 
   // Instantiate points
@@ -134,6 +136,16 @@ function create() {
     this.add.rectangle(0, 11, 88, 16, 0xffffff, 1),
     this.add.text(-36, 3, 'New Box', { fill: 'black' })
       .setInteractive({ useHandCursor: true })
+      .on('poiterdown', () => {
+        const newbox = boxes.create(600, 300, 'square')
+        newbox.setOrigin(0.5)
+        newbox.setInteractive()
+        newbox.on('pointerup', (pointer, newbox) => {
+          addWireButton.setActive(true).setVisible(true)
+          location = {x: pointer.x, y: pointer.y}
+        })
+        this.input.setDraggable(newbox)
+      })
   ])
 
   addWireButton = this.add.container(750,22,[
@@ -142,7 +154,30 @@ function create() {
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => {
         console.log("add wire button was pressed")
-        console.log(location);
+        console.log(location)
+        // get index of new curve
+        const index = curves.length
+        // set params for new curve
+        const newStartPoint = new Phaser.Math.Vector2(location.x, location.y)
+        const newControlPoint = new Phaser.Math.Vector2(chooseDirection(location.x, 50), location.y)
+        const newEndPoint = new Phaser.Math.Vector2(chooseDirection(location.x, 100), location.y)
+        curves.push(new Phaser.Curves.QuadraticBezier(newStartPoint, newControlPoint, newEndPoint))
+ 
+        // create new points
+        const newPoint0 = points.create(curves[index].p0.x, curves[index].p0.y, 'circle', 0)
+        newPoint0.setData('vector', curves[index].p0)
+        newPoint0.setInteractive()
+        this.input.setDraggable(newPoint0)
+
+        const newPoint1 = points.create(curves[index].p1.x, curves[index].p1.y, 'circle', 0)
+        newPoint1.setData('vector', curves[index].p1)
+        newPoint1.setInteractive()
+        this.input.setDraggable(newPoint1)
+
+        const newPoint2 = points.create(curves[index].p2.x, curves[index].p2.y, 'circle', 0)
+        newPoint2.setData('vector', curves[index].p2)
+        newPoint2.setInteractive()
+        this.input.setDraggable(newPoint2)
       })
   ]).setActive(false).setVisible(false)
 
@@ -264,15 +299,8 @@ function handleColour () {
   camera.setBackgroundColor(color)
 }
 
-function clearContextMenu (){
-  console.log(" 'clearContextMenu' code block is being reached");
-  // check to see if menu is already open and clear/rest indicator if it is
-  contextMenuIsDisplaying && (contextMenu.destroy(), contextMenuIsDisplaying = false)
-}
-
 function hideControls (){
-  console.log(" 'clearContextMenu' code block is being reached");
-  // check to see if menu is already open and clear/rest indicator if it is
+  // check to see if add wire button is visable and hide control if it is
   addWireButton.visible && addWireButton.setActive(false).setVisible(false)
 }
 
