@@ -168,7 +168,7 @@ function create() {
     emitter.emit('changeBackground')
   })
 
-  // hide controls when clickend on another oject
+  // hide controls when clicked on another oject
   this.input.on('pointerdown', () => {
     hideControls()
   })
@@ -205,6 +205,7 @@ function hideControls (){
   addWireButton.visible && addWireButton.setActive(false).setVisible(false)
 }
 
+// checks to see which side of the display a box is on and which side to place a new wire
 function chooseDirection (x, dist){
   let newX 
   x > 400? newX = x - dist: newX = x + dist
